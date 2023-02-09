@@ -23,7 +23,7 @@ public class Basket {
     }
 
     public void addToCart(int productNum, int amount) {
-        if (productNum < products.length && productNum >= 0) {
+        if (productNum <= products.length && productNum > 0) {
             baskets[productNum -1] += amount;
         }
     }
