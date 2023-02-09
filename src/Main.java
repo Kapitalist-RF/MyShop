@@ -7,7 +7,7 @@ public class Main {
 
     public static void main(String[] args) {
         File file = new File("basket.txt");
-        Basket basket = Basket.loadFromTxtFile(file);
+        Basket basket = Basket.loadFromBinFile(file);
         if (basket == null) {
             String[] products = {"Хлеб", "Яблоки", "Молоко"};
             int[] prices = {100, 200, 300};
@@ -23,15 +23,13 @@ public class Main {
                     break;
                 }
                 basket.addToCart(Integer.parseInt(myPursh[0]), Integer.parseInt(myPursh[1]));
-                basket.saveTxt(file);
+                basket.saveBin(file);
                 basket.printCart();
                 System.out.println();
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
 
     public static void shoppingList(String[] products, int[] prices) {

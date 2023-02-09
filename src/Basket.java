@@ -4,8 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 
-public class Basket {
-
+public class Basket implements Serializable {
+    private static final long serialVersionUID = 1;
     private int[] prices;
     private String[] products;
     private int[] baskets;
@@ -23,8 +23,8 @@ public class Basket {
     }
 
     public void addToCart(int productNum, int amount) {
-        if (productNum < products.length && productNum >= 0) {
-            baskets[productNum -1] += amount;
+        if (productNum <= products.length && productNum > 0) {
+            baskets[productNum - 1] += amount;
         }
     }
 
@@ -77,10 +77,10 @@ public class Basket {
             try (BufferedReader reader = new BufferedReader(new FileReader(textFile))) {
                 String str = null;
                 List<String> list = new ArrayList<>();
-                while ((str = reader.readLine()) != null){
+                while ((str = reader.readLine()) != null) {
                     list.add(str);
                 }
-                if(list.size() == 3) {
+                if (list.size() == 3) {
                     String[] products = list.get(0).split(" ");
                     int[] prices = Arrays.stream(list.get(1).split(" "))
                             .flatMapToInt(o1 -> IntStream.of(Integer.parseInt(o1))).toArray();
@@ -106,5 +106,32 @@ public class Basket {
 
     public String[] getProducts() {
         return products;
+    }
+
+    public void saveBin(File file) {
+
+        try (ObjectOutputStream ous = new ObjectOutputStream(new FileOutputStream(file))) {
+            ous.writeObject(this);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public static Basket loadFromBinFile(File file) {
+        if (file.exists() && file.canRead()) {
+            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
+                return (Basket) ois.readObject();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
 }
