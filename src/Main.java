@@ -6,8 +6,9 @@ import java.io.InputStreamReader;
 public class Main {
 
     public static void main(String[] args) {
-        File file = new File("basket.txt");
-        Basket basket = Basket.loadFromTxtFile(file);
+        ClientLog clientLog = new ClientLog();
+        File file = new File("basket.json");
+        Basket basket = Basket.loadFromJsonFile(file);
         if (basket == null) {
             String[] products = {"Хлеб", "Яблоки", "Молоко"};
             int[] prices = {100, 200, 300};
@@ -20,17 +21,17 @@ public class Main {
                 shoppingList(basket.getProducts(), basket.getPrices());
                 String[] myPursh = reader.readLine().split(" ");
                 if(myPursh[0].equalsIgnoreCase("end")){
+                    clientLog.exportAsCSV(new File("log.txt"));
                     break;
                 }
-                basket.addToCart(Integer.parseInt(myPursh[0]), Integer.parseInt(myPursh[1]));
-                basket.saveTxt(file);
+                basket.addToCart(Integer.parseInt(myPursh[0]), Integer.parseInt(myPursh[1]), clientLog);
+                basket.saveJson(file);
                 basket.printCart();
                 System.out.println();
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-
 
     }
 

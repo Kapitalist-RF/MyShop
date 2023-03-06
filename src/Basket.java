@@ -1,3 +1,8 @@
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,9 +27,10 @@ public class Basket {
         this.baskets = baskets;
     }
 
-    public void addToCart(int productNum, int amount) {
+    public void addToCart(int productNum, int amount, ClientLog clientLog) {
+        clientLog.log(productNum, amount);
         if (productNum <= products.length && productNum > 0) {
-            baskets[productNum -1] += amount;
+            baskets[productNum - 1] += amount;
         }
     }
 
@@ -77,10 +83,10 @@ public class Basket {
             try (BufferedReader reader = new BufferedReader(new FileReader(textFile))) {
                 String str = null;
                 List<String> list = new ArrayList<>();
-                while ((str = reader.readLine()) != null){
+                while ((str = reader.readLine()) != null) {
                     list.add(str);
                 }
-                if(list.size() == 3) {
+                if (list.size() == 3) {
                     String[] products = list.get(0).split(" ");
                     int[] prices = Arrays.stream(list.get(1).split(" "))
                             .flatMapToInt(o1 -> IntStream.of(Integer.parseInt(o1))).toArray();
@@ -99,6 +105,66 @@ public class Basket {
         }
         return null;
     }
+
+    public void saveJson(File jsonFile) {
+        JSONObject objJson = new JSONObject();
+        JSONArray listProducts = new JSONArray();
+        JSONArray listPrices = new JSONArray();
+        JSONArray listBasket = new JSONArray();
+        for (String product : products) {
+            listProducts.add(product);
+        }
+        objJson.put("products", listProducts);
+        for (int price : prices) {
+            listPrices.add(price);
+        }
+        objJson.put("prices", listPrices);
+        for (int basket : baskets) {
+            listBasket.add(basket);
+        }
+        objJson.put("basket", listBasket);
+        try (FileWriter fileWriter = new FileWriter(jsonFile)) {
+            fileWriter.write(objJson.toJSONString());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Basket loadFromJsonFile(File jsonFile) {
+        JSONParser parser = new JSONParser();
+        try {
+            Object o = parser.parse(new FileReader(jsonFile));
+            JSONObject jsonObject = (JSONObject) o;
+            JSONArray listProducts = (JSONArray) jsonObject.get("products");
+            JSONArray listPrices = (JSONArray) jsonObject.get("prices");
+            JSONArray listBasket = (JSONArray) jsonObject.get("basket");
+            String[] products = new String[listProducts.size()];
+            int[] prices = new int[listPrices.size()];
+            int[] baskets = new int[listBasket.size()];
+
+            for (int i = 0; i < products.length; i++) {
+                products[i] = (String) listProducts.get(i);
+            }
+
+            for (int i = 0; i < prices.length; i++) {
+                prices[i] = Integer.parseInt(listPrices.get(i).toString());
+            }
+
+            for (int i = 0; i < baskets.length; i++) {
+                baskets[i] = Integer.parseInt(listBasket.get(i).toString());
+            }
+
+            return new Basket(prices, products, baskets);
+        } catch (ParseException e) {
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 
     public int[] getPrices() {
         return prices;
