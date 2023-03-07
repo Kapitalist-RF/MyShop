@@ -9,10 +9,18 @@ import java.nio.file.StandardOpenOption;
 
 public class ClientLog {
     private String[] products = new String[2];
-    private File csvFile = new File("log.csv");
+    private File csvFile = new File("client.csv");
     private File txtFile = new File("log.txt");
     private boolean nameBool = false;
     private StringBuilder sb = new StringBuilder();
+
+    public ClientLog() {
+
+    }
+
+    public ClientLog(File csvFile) {
+        this.csvFile = csvFile;
+    }
 
     public void log(int productNum, int amount) {
         if (!nameBool) {
@@ -49,9 +57,9 @@ public class ClientLog {
 
     public void exportAsCSV(File txtFile) {
         try (BufferedReader reader = new BufferedReader(new FileReader(txtFile));
-             CSVWriter writer = new CSVWriter(new FileWriter(csvFile))){
+             CSVWriter writer = new CSVWriter(new FileWriter(csvFile))) {
             String str = null;
-            while ((str = reader.readLine()) != null){
+            while ((str = reader.readLine()) != null) {
                 writer.writeNext(str.split(","));
             }
         } catch (FileNotFoundException e) {

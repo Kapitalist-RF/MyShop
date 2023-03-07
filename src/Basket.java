@@ -27,8 +27,10 @@ public class Basket {
         this.baskets = baskets;
     }
 
-    public void addToCart(int productNum, int amount, ClientLog clientLog) {
-        clientLog.log(productNum, amount);
+    public void addToCart(int productNum, int amount, ClientLog clientLog, Boolean logBool) {
+        if (logBool) {
+            clientLog.log(productNum, amount);
+        }
         if (productNum <= products.length && productNum > 0) {
             baskets[productNum - 1] += amount;
         }
