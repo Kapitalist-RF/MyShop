@@ -21,6 +21,10 @@ public class Basket {
         this.baskets = new int[products.length];
     }
 
+    public int[] getBaskets() {
+        return baskets;
+    }
+
     private Basket(int[] prices, String[] products, int[] baskets) {
         this.prices = prices;
         this.products = products;
@@ -31,6 +35,11 @@ public class Basket {
         if (logBool) {
             clientLog.log(productNum, amount);
         }
+        if (productNum <= products.length && productNum > 0) {
+            baskets[productNum - 1] += amount;
+        }
+    }
+    public void addToCart(int productNum, int amount) {
         if (productNum <= products.length && productNum > 0) {
             baskets[productNum - 1] += amount;
         }
@@ -60,6 +69,32 @@ public class Basket {
             }
             System.out.println("Итого: " + sum + " руб.");
         }
+    }
+
+    public String printCartString() {
+        int sum = 0;
+        StringBuilder sb = new StringBuilder();
+        sb.append("My Basket: \n");
+        if (!Arrays.stream(baskets).allMatch(o1 -> o1 == 0)) {
+            for (int i = 0; i < baskets.length; i++) {
+                if (baskets[i] != 0) {
+                    sb.append(i + 1)
+                            .append(". ")
+                            .append(products[i])
+                            .append(" - ")
+                            .append(baskets[i])
+                            .append(" шт. ")
+                            .append(prices[i])
+                            .append(" руб/шт ")
+                            .append(baskets[i] * prices[i])
+                            .append(" руб в сумме.")
+                            .append("\n");
+                    sum += baskets[i] * prices[i];
+                }
+            }
+        }
+        sb.append("Итого: ").append(sum).append(" руб.");
+        return sb.toString();
     }
 
     public void saveTxt(File textFile) {
